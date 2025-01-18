@@ -15,32 +15,46 @@ const client = createClient({
 
 const ProductDetail = ({ params }: { params: { id: string } }) => {
   const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
   const [cart, setCart] = useState<any[]>([]);
+  const [showFullDescription, setShowFullDescription] = useState(false);
+
+  const toggleDescription = () => {
+    setShowFullDescription((prev) => !prev);
+  };
 
   // Fetch product details
   useEffect(() => {
     const fetchProduct = async () => {
-      const product = await client.fetch(
-        `*[_type == "product" && _id == $id][0] {
-          id,
-          title,
-          price,
-          originalprice,
-          "image": image.asset->url,
-          description,
-          colors,
-          reviews,
-          material,
-          categories,
-          dimensions,
-          badge,
-          tags,
-          code,
-    
-        }`,
-        { id: params.id }
-      );
-      setProduct(product);
+      try {
+        setLoading(true);
+        const product = await client.fetch(
+          `*[_type == "product" && _id == $id][0] {
+            _id,
+            title,
+            price,
+            originalprice,
+             "imageurl": imageurl.asset->url,
+            description,
+            colors,
+            reviews,
+            material,
+            categories,
+            dimensions,
+            badge,
+            tags,
+            code
+          }`,
+          { id: params.id }
+        );
+        if (!product) throw new Error("Product not found");
+        setProduct(product);
+      } catch (err: any) {
+        setError(err.message || "Failed to fetch product details.");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchProduct();
@@ -49,33 +63,34 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
   // Sync cart state with localStorage
   useEffect(() => {
     const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCart(JSON.parse(storedCart)); // Load cart from localStorage
-    }
+    setCart(storedCart ? JSON.parse(storedCart) : []);
   }, []);
 
   const handleAddToCart = () => {
     if (!product) return;
 
-    // Check if the product already exists in the cart
-    const existingProductIndex = cart.findIndex(item => item._id === product._id);
+    const existingProductIndex = cart.findIndex((item) => item._id === product._id);
     let updatedCart;
 
     if (existingProductIndex !== -1) {
-      // Update the quantity if the product already exists
       updatedCart = [...cart];
       updatedCart[existingProductIndex].quantity += 1;
     } else {
-      // Add the product to the cart
       updatedCart = [...cart, { ...product, quantity: 1 }];
     }
 
-    // Update cart state and localStorage
     setCart(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
-
     alert(`${product.title} has been added to the cart!`);
   };
+
+  if (loading) {
+    return <div className="text-center py-12">Loading product details...</div>;
+  }
+
+  if (error) {
+    return <div className="text-center py-12 text-red-500">{error}</div>;
+  }
 
   if (!product) {
     return <div className="text-center py-12">Product not found</div>;
@@ -112,8 +127,8 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
               {[...Array(3)].map((_, index) => (
                 <Image
                   key={index}
-                  src={product.image}
-                  alt={product.title}
+                  src={product.imageurl}
+                  alt={product.title || "Product image"}
                   width={150}
                   height={200}
                   className="object-cover rounded-lg shadow-md"
@@ -124,8 +139,8 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
             {/* Main Product Image */}
             <div className="flex justify-center items-center h-full pr-9">
               <Image
-                src={product.image}
-                alt={product.title}
+                src={product.imageurl || "/placeholder.png"}
+                alt={product.title || "Product image"}
                 width={400}
                 height={600}
                 className="object-cover rounded-lg shadow-lg"
@@ -134,7 +149,7 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
 
             {/* Product Details */}
             <div className="flex flex-col space-y-6 text-left px-4">
-              <h2 className="text-3xl font-semibold text-gray-900">{product.title}</h2>
+              <h2 className="text-3xl font-semibold text-gray-900">{product.title || "Product Title"}</h2>
               <div className="flex items-center space-x-2">
                 <div className="flex">
                   {[...Array(5)].map((_, index) => (
@@ -149,10 +164,10 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
                     </svg>
                   ))}
                 </div>
-                <span className="text-gray-500">({product.reviews})</span>
+                <span className="text-gray-500">({product.reviews || 0})</span>
               </div>
               <p className="text-sm font-semibold text-gray-800">
-                ${product.price}
+                ${product.price || "0.00"}
                 {product.originalprice && (
                   <span className="pl-2 line-through text-pink-500">
                     ${product.originalprice}
@@ -161,27 +176,40 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
               </p>
               <p className="text-[#151875] font-bold">Color</p>
               <div className="flex gap-2 mt-6">
-                {product.colors?.map((color: string, index: number) => (
-                  <div
-                    key={index}
-                    className="w-8 h-8 rounded-full border"
-                    style={{ backgroundColor: color.toLowerCase() }}
-                  ></div>
-                ))}
+                {product.colors?.length ? (
+                  product.colors.map((color: string, index: number) => (
+                    <div
+                      key={index}
+                      className="w-8 h-8 rounded-full border"
+                      style={{ backgroundColor: color.toLowerCase() }}
+                    ></div>
+                  ))
+                ) : (
+                  <p className="text-gray-600">No colors available</p>
+                )}
               </div>
               <p className="text-[#151875] font-bold">Description</p>
-              <p className="text-gray-600">{product.description}</p>
+              <p className="text-gray-600">
+                {product.description
+                  ? showFullDescription
+                    ? product.description
+                    : product.description.split(" ").slice(0, 50).join(" ") + "..."
+                  : "No description available"}
+              </p>
+              {product.description && product.description.split(" ").length > 50 && (
+                <button
+                  className="text-blue-500 hover:underline mt-1"
+                  onClick={toggleDescription}
+                >
+                  {showFullDescription ? "Read Less" : "Read More"}
+                </button>
+              )}
               <p className="text-[#151875] font-bold text-sm">Material:</p>
-              <p className="text-gray-600">{product.material}</p>
+              <p className="text-gray-600">{product.material || "Material information not available"}</p>
               <p className="text-[#151875] font-bold text-sm">Dimensions:</p>
-              <p className="text-gray-600">{product.dimensions}</p>
+              <p className="text-gray-600">{product.dimensions || "Dimensions not available"}</p>
               <p className="text-[#151875] font-bold text-sm">Code:</p>
-              <p className="text-gray-600">{product.code}</p>
-              <p className="text-[#151875] font-bold text-sm">Categories:</p>
-              <p className="text-gray-600">{product.categories}</p>
-              <p className="text-[#151875] font-bold text-sm">Badge:</p>
-              <p className="text-gray-600">{product.badge}</p>
-       
+              <p className="text-gray-600">{product.code || "N/A"}</p>
 
               <button
                 className="mt-6 px-6 py-3 bg-[#151875] text-white hover:bg-pink-500 flex items-center justify-center"
