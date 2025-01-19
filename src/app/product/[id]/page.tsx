@@ -123,18 +123,19 @@ const ProductDetail = ({ params }: { params: { id: string } }) => {
         <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-6xl w-full">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 p-6">
             {/* Thumbnail Images */}
-            <div className="flex flex-col space-y-4 items-center">
-              {[...Array(3)].map((_, index) => (
-                <Image
-                  key={index}
-                  src={product.imageurl}
-                  alt={product.title || "Product image"}
-                  width={150}
-                  height={200}
-                  className="object-cover rounded-lg shadow-md"
-                />
-              ))}
-            </div>
+            <div className="hidden md:flex flex-col space-y-4 items-center">
+  {[...Array(3)].map((_, index) => (
+    <Image
+      key={index}
+      src={product.imageurl}
+      alt={product.title || "Product image"}
+      width={150}
+      height={200}
+      className="object-cover rounded-lg shadow-md"
+    />
+  ))}
+</div>
+
 
             {/* Main Product Image */}
             <div className="flex justify-center items-center h-full pr-9">
