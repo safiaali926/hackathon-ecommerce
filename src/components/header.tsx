@@ -8,12 +8,15 @@ import SearchBar from "./handlesearch";
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [homeDropdownOpen, setHomeDropdownOpen] = useState(false);
-  const dropdownRef = useRef(null);
+
+  // Explicitly typing dropdownRef to HTMLUListElement or any other suitable element type
+  const dropdownRef = useRef<HTMLUListElement | null>(null);
 
   // Close dropdown when clicking outside of it
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    const handleClickOutside = (event: MouseEvent) => {
+      // Adding null check for dropdownRef.current
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setHomeDropdownOpen(false);
       }
     };
