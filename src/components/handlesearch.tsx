@@ -83,7 +83,7 @@ const SearchBar: React.FC = () => {
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="py-2 pl-4 pr-12 w-72 text-sm border border-gray-300 focus:outline-none"
+          className="py-2 pl-4 pr-12 w-72 text-sm border border-gray-300 text-gray-900 focus:outline-none"
           placeholder="Search by name or category"
         />
         <button className="absolute top-0 bottom-0 right-0 px-4 bg-pink-500 text-white hover:bg-pink-600">
