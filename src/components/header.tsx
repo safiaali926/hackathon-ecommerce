@@ -68,7 +68,7 @@ function Header() {
               <UserRound className="w-4 h-4 mr-2" />
               Login
             </Link>
-            <Link href="#" className="flex items-center hover:underline">
+            <Link href="/wishlist" className="flex items-center hover:underline">
               <Heart className="w-4 h-4 mr-2" />
               Wishlist
             </Link>
@@ -183,7 +183,7 @@ function Header() {
             {homeDropdownOpen && (
               <ul
                 ref={dropdownRef}
-                className="absolute w-56 left-0 top-full mt-2 bg-white shadow-md rounded-md z-10"
+                className="absolute w-56 left-0 top-full mt-2 bg-white text-gray-900 shadow-md rounded-md z-10"
               >
                 <li>
                   <Link href="/chairs" className="block px-4 py-2 hover:bg-gray-100">
@@ -209,25 +209,21 @@ function Header() {
             )}
           </li>
           <li>
-            <Link href="/cart" className="block hover:bg-pink-500 p-2 rounded">
-              Pages
-            </Link>
-          </li>
-          <li>
-            <Link href="/shoplist" className="block hover:bg-pink-500 p-2 rounded">
-              Products
-            </Link>
-          </li>
-          <li>
-            <Link href="/blog" className="block hover:bg-pink-500 p-2 rounded">
-              Blog
-            </Link>
-          </li>
-          <li>
             <Link href="/shop" className="block hover:bg-pink-500 p-2 rounded">
-              Shop
+            Shop
             </Link>
           </li>
+          <li>
+            <Link href="/aboutus" className="block hover:bg-pink-500 p-2 rounded">
+            About
+            </Link>
+          </li>
+          <li>
+            <Link href="/faq" className="block hover:bg-pink-500 p-2 rounded">
+            FAQ
+            </Link>
+          </li>
+         
           <li>
             <Link href="/contact" className="block hover:bg-pink-500 p-2 rounded">
               Contact

@@ -5,28 +5,31 @@ import Link from "next/link";
 
 const slides = [
   {
-    title: "New Furniture Collection Trends in 2020",
+    title: "The Heart of Every Room Deserves a Touch of Luxe...",
     description:
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Magna in est adipiscing in phasellus non in justo.",
+      "Welcome to Hekto, where luxury meets convenience. . Discover our carefully curated collection of premium home décor pieces that bring sophistication to your living spaces. ",
     buttonText: "Shop Now",
     chairImage: "/sofa1.png", // Replace with the correct path
     lampImage: "/lamp.png", // Replace with the correct path
+    link: "/shop"
   },
   {
-    title: "Modern Chair Designs for Your Home",
+    title: "Light Up Your Home with Sophisticated Style!",
     description:
-      "Discover the latest modern furniture trends to elevate your living space.",
+      "Explore our collection of luxurious lamps that perfectly blend style and function.",
     buttonText: "Shop Now",
-    chairImage: "/sofa1.png", // Replace with another chair image
+    chairImage: "/lamp2.avif", // Replace with another chair image
     lampImage: "/lamp.png", // Replace with another lamp image
+     link: "/lamps"
   },
   {
-    title: "Elegant Furniture for Every Space",
+    title: "Find the Centerpiece Your Space Deserves!",
     description:
-      "Bring timeless elegance to your home with our exclusive furniture collection.",
+      "Perfect for contemporary spaces, these vases add understated elegance to your décor.",
     buttonText: "Shop Now",
-    chairImage: "/sofa1.png", // Replace with another chair image
+    chairImage: "/vase2.webp", // Replace with another chair image
     lampImage: "/lamp.png", // Replace with another lamp image
+     link: "/vases"
   },
 ];
 
@@ -63,7 +66,7 @@ function HeroSection() {
       {/* Center Column: Content (Title, Description, Button) */}
       <div className="md:w-1/3 max-w-lg text-center md:text-left flex flex-col justify-center">
         <p className="text-sm text-pink-500 font-medium">
-          Best Furniture For Your Castle...
+        Elevate Your Home with One Click....
         </p>
         <h1 className="text-3xl md:text-4xl font-bold text-indigo-950 leading-tight mt-2">
           {current.title}
@@ -72,7 +75,7 @@ function HeroSection() {
           {current.description}
         </p>
         <Link
-          href="/shop"
+          href={current.link}
           className="inline-block bg-pink-500 text-white text-sm font-medium py-3 px-6 rounded-md mt-6 hover:bg-pink-600 transition-all duration-300 w-1/3 text-center"
         >
           {current.buttonText}

@@ -36,6 +36,7 @@ export default function Mirrorshop() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState<string>("best-match");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [wishlist, setWishlist] = useState<Product[]>([]);
   const productsPerPage = 3;
 
   // Fetch products from Sanity
@@ -66,7 +67,28 @@ export default function Mirrorshop() {
     };
 
     fetchProducts();
+    
+    // Load wishlist from localStorage
+    const storedWishlist = localStorage.getItem("wishlist");
+    if (storedWishlist) {
+      setWishlist(JSON.parse(storedWishlist));
+    }
   }, []);
+
+  // Handle Wishlist Add/Remove
+  const handleWishlistToggle = (product: Product) => {
+    const isAlreadyInWishlist = wishlist.some((item) => item._id === product._id);
+
+    let updatedWishlist;
+    if (isAlreadyInWishlist) {
+      updatedWishlist = wishlist.filter((item) => item._id !== product._id); // Remove from wishlist
+    } else {
+      updatedWishlist = [...wishlist, product]; // Add to wishlist
+    }
+
+    setWishlist(updatedWishlist);
+    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // Save updated wishlist to localStorage
+  };
 
   // Filter and sort logic
   const filteredAndSortedProducts = products
@@ -81,7 +103,7 @@ export default function Mirrorshop() {
       if (sortOption === "price-low-high") return a.price - b.price;
       if (sortOption === "price-high-low") return b.price - a.price;
       if (sortOption === "rating") return b.reviews - a.reviews;
-      return 0; // Default: Best match (unchanged order)
+      return 0;
     });
 
   // Paginate the filtered and sorted products
@@ -161,13 +183,13 @@ export default function Mirrorshop() {
           <div>
             <h3 className="text-xl font-semibold text-[#151875] mb-2">Price Filter</h3>
             <ul className="space-y-2">
-              {[
-                [0, 20] as [number, number],
-                [20, 40] as [number, number],
-                [40, 60] as [number, number],
-                [60, 100] as [number, number],
-                [100, 150] as [number, number],
-                [0, 150] as [number, number],
+              {[ 
+                [0, 20] as [number, number], 
+                [20, 40] as [number, number], 
+                [40, 60] as [number, number], 
+                [60, 100] as [number, number], 
+                [100, 150] as [number, number], 
+                [0, 150] as [number, number]
               ].map((range, index) => (
                 <li key={index} className="flex items-center space-x-2">
                   <input
@@ -230,8 +252,11 @@ export default function Mirrorshop() {
                   <button
                     className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200"
                     aria-label="Add to Wishlist"
+                    onClick={() => handleWishlistToggle(product)}
                   >
-                    <FiHeart className="text-xl" />
+                    <FiHeart
+                      className={`text-xl ${wishlist.some((item) => item._id === product._id) ? "text-pink-500" : ""}`}
+                    />
                   </button>
                   <Link
                     href={`/product/${product._id}`}

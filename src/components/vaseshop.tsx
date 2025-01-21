@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import { createClient } from "@sanity/client";
 import Image from "next/image";
@@ -36,25 +35,24 @@ export default function Vaseshop() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [sortOption, setSortOption] = useState<string>("best-match");
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [wishlist, setWishlist] = useState<Product[]>([]);
   const productsPerPage = 3;
 
   // Fetch products from Sanity
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const query = `
-          *[_type == "product" && "Vase" in categories] | order(_createdAt desc) {
-            _id,
-            title,
-            description,
-            price,
-            originalprice,
-            reviews,
-            "imageurl": imageurl.asset->url,
-            categories,
-            tags
-          }
-        `;
+        const query = `*[_type == "product" && "Vase" in categories] | order(_createdAt desc) {
+          _id,
+          title,
+          description,
+          price,
+          originalprice,
+          reviews,
+          "imageurl": imageurl.asset->url,
+          categories,
+          tags
+        }`;
         const data: Product[] = await client.fetch(query);
         setProducts(data);
       } catch (err) {
@@ -66,7 +64,28 @@ export default function Vaseshop() {
     };
 
     fetchProducts();
+
+    // Load wishlist from localStorage
+    const storedWishlist = localStorage.getItem("wishlist");
+    if (storedWishlist) {
+      setWishlist(JSON.parse(storedWishlist));
+    }
   }, []);
+
+  // Handle Wishlist Add/Remove
+  const handleWishlistToggle = (product: Product) => {
+    const isAlreadyInWishlist = wishlist.some((item) => item._id === product._id);
+
+    let updatedWishlist;
+    if (isAlreadyInWishlist) {
+      updatedWishlist = wishlist.filter((item) => item._id !== product._id); // Remove from wishlist
+    } else {
+      updatedWishlist = [...wishlist, product]; // Add to wishlist
+    }
+
+    setWishlist(updatedWishlist);
+    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // Save updated wishlist to localStorage
+  };
 
   // Filter and sort logic
   const filteredAndSortedProducts = products
@@ -106,7 +125,7 @@ export default function Vaseshop() {
       <div className="max-w-7xl mx-auto bg-white p-4 rounded-lg mb-6">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold text-pink-500">Explore Our Collection of Fancy Vases!</h1>
+            <h1 className="text-2xl font-bold text-pink-500">Explore Our Collection of Luxury Vases!</h1>
             <p className="text-sm text-gray-500">About {filteredAndSortedProducts.length} results</p>
           </div>
           <div className="flex space-x-4 items-center">
@@ -161,24 +180,17 @@ export default function Vaseshop() {
           <div>
             <h3 className="text-xl font-semibold text-[#151875] mb-2">Price Filter</h3>
             <ul className="space-y-2">
-              {[
-                [0, 20] as [number, number],
-                [20, 40] as [number, number],
-                [40, 60] as [number, number],
-                [60, 100] as [number, number],
-                [100, 150] as [number, number],
-                [0, 150] as [number, number],
-              ].map((range, index) => (
+              {[0, 20, 40, 60, 100, 150].map((range, index) => (
                 <li key={index} className="flex items-center space-x-2">
                   <input
                     type="radio"
                     name="price"
                     id={`price-${index}`}
                     className="form-radio"
-                    onChange={() => setSelectedPriceRange(range)}
+                    onChange={() => setSelectedPriceRange([range, range + 20])}
                   />
                   <label htmlFor={`price-${index}`} className="text-gray-700">
-                    ${range[0]} - ${range[1]}
+                    ${range} - ${range + 20}
                   </label>
                 </li>
               ))}
@@ -230,8 +242,11 @@ export default function Vaseshop() {
                   <button
                     className="flex items-center justify-center w-10 h-10 bg-gray-100 rounded-full hover:bg-gray-200"
                     aria-label="Add to Wishlist"
+                    onClick={() => handleWishlistToggle(product)} // Handle wishlist toggle
                   >
-                    <FiHeart className="text-xl" />
+                    <FiHeart
+                      className={`text-xl ${wishlist.some((item) => item._id === product._id) ? "text-red-500" : "text-gray-900"}`}
+                    />
                   </button>
                   <Link
                     href={`/product/${product._id}`}

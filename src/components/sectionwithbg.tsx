@@ -26,7 +26,7 @@ export function SectionWithBackground() {
             href="#"
             className="px-8 py-3 bg-pink-500 text-white rounded-sm hover:bg-pink-600 transition-all duration-300"
           >
-            Shop Now
+            Subscribe
           </Link>
         </div>
       </div>

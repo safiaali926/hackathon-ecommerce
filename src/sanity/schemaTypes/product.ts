@@ -1,7 +1,7 @@
 import { defineType, defineField } from 'sanity';
 
 export default defineType({
-  name: 'product', // Unique identifier for this schema
+  name: 'product', 
   title: 'Product', // Display title in Sanity Studio
   type: 'document', // Declares this as a document type
   fields: [

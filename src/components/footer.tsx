@@ -45,30 +45,27 @@ function Footer() {
               </h2>
               <nav className="list-none mb-10">
                 <li className="mb-4">
-                  <Link href="/laptops-computers" className="text-[#8A8FB9] hover:text-gray-800 ml-6">
-                    Laptops & Computers
+                  <Link href="/chairs" className="text-[#8A8FB9] hover:text-gray-800 ml-6">
+                    Top Chairs
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/cameras-photography" className="text-[#8A8FB9] hover:text-gray-800 ml-6">
-                    Cameras & Photography
+                  <Link href="/vases" className="text-[#8A8FB9] hover:text-gray-800 ml-6">
+                    Fancy Vases
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/smartphones-tablets" className="text-[#8A8FB9] hover:text-gray-800 ml-6">
-                    Smart Phones & Tablets
+                  <Link href="/lamps" className="text-[#8A8FB9] hover:text-gray-800 ml-6">
+                    Luxury Lamps
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/video-games-consoles" className="text-[#8A8FB9] hover:text-gray-800 ml-6">
-                    Video Games & Consoles
+                  <Link href="/mirrors" className="text-[#8A8FB9] hover:text-gray-800 ml-6">
+                    Wall Mirrors
                   </Link>
                 </li>
-                <li className="mb-4">
-                  <Link href="/waterproof-headphones" className="text-[#8A8FB9] hover:text-gray-800 ml-6">
-                    Waterproof Headphones
-                  </Link>
-                </li>
+                
+                
               </nav>
             </div>
 
@@ -113,35 +110,31 @@ function Footer() {
               </h2>
               <nav className="list-none mb-10">
                 <li className="mb-4">
-                  <Link href="/blog" className="text-[#8A8FB9] hover:text-gray-800">
-                    Blog
+                  <Link href="/" className="text-[#8A8FB9] hover:text-gray-800">
+                    Home
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/browse-shop" className="text-[#8A8FB9] hover:text-gray-800">
-                    Browse the Shop
+                  <Link href="/shop" className="text-[#8A8FB9] hover:text-gray-800">
+                   Shop
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/category" className="text-[#8A8FB9] hover:text-gray-800">
-                    Category
+                  <Link href="/aboutus" className="text-[#8A8FB9] hover:text-gray-800">
+                    About
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/pre-built-pages" className="text-[#8A8FB9] hover:text-gray-800">
-                    Pre-Built Pages
+                  <Link href="/faq" className="text-[#8A8FB9] hover:text-gray-800">
+                    FAQ
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/visual-composer-elements" className="text-[#8A8FB9] hover:text-gray-800">
-                    Visual Composer Elements
+                  <Link href="/contact" className="text-[#8A8FB9] hover:text-gray-800">
+                   Contact
                   </Link>
                 </li>
-                <li className="mb-4">
-                  <Link href="/woocommerce-pages" className="text-[#8A8FB9] hover:text-gray-800">
-                    WooCommerce Pages
-                  </Link>
-                </li>
+                
               </nav>
             </div>
           </div>
