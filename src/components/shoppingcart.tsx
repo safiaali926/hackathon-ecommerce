@@ -4,6 +4,7 @@ import { CircleCheckBig } from "lucide-react";
 import { useRouter } from "next/navigation"; // Use this for App Router in Next.js 13+
 import { createClient } from "@sanity/client";
 import product from "@/sanity/schemaTypes/product";
+import Link from "next/link";
 
 // Initialize Sanity client
 const client = createClient({
@@ -160,9 +161,9 @@ export default function Cart() {
               <span className="text-xl">${calculateTotal()}</span>
             </div>
             <div className="mt-8">
-              <button className="w-full py-3 bg-[#151875] text-white rounded-md hover:bg-pink-500">
+             <Link href="/shipment"> <button className="w-full py-3 bg-[#151875] text-white rounded-md hover:bg-pink-500">
                 Proceed to Checkout
-              </button>
+              </button></Link>
             </div>
           </div>
         </div>
