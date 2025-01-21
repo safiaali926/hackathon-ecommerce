@@ -10,6 +10,7 @@
     "import-data": "node scripts/importSanityData.mjs"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.9.15",
     "@radix-ui/react-menubar": "^1.1.2",
     "@radix-ui/react-tabs": "^1.1.1",
     "@sanity/image-url": "^1.1.0",
@@ -27,6 +28,7 @@
     "react-dom": "^18",
     "react-icons": "^5.4.0",
     "sanity": "^3.70.0",
+    "shippo": "^2.14.1",
     "styled-components": "^6.1.14",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7"
@@ -35,6 +37,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "@types/shippo": "^1.7.8",
     "eslint": "^8",
     "eslint-config-next": "14.2.2",
     "postcss": "^8",

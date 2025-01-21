@@ -25,7 +25,7 @@ function Footer() {
                       name="footer-field"
                       className="w-full bg-gray-100 bg-opacity-50 rounded-l-md border border-gray-300 focus:bg-transparent focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-xs outline-none text-gray-700 py-2 px-4 leading-8 transition-colors duration-200 ease-in-out"
                     />
-                    <button className="bg-pink-500 text-sm text-white py-1 px-2 rounded-r-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-indigo-200">
+                    <button className="bg-pink-500 text-sm text-white py-1 px-2 rounded-r-md hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-indigo-200">
                       Signup
                     </button>
                   </div>
@@ -76,30 +76,26 @@ function Footer() {
               </h2>
               <nav className="list-none mb-10">
                 <li className="mb-4">
-                  <Link href="/my-account" className="text-[#8A8FB9] hover:text-gray-800">
-                    My Account
+                  <Link href="/signin" className="text-[#8A8FB9] hover:text-gray-800">
+                    Signin
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/discount" className="text-[#8A8FB9] hover:text-gray-800">
-                    Discount
+                  <Link href="/wishlist" className="text-[#8A8FB9] hover:text-gray-800">
+                   Wishlist
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/returns" className="text-[#8A8FB9] hover:text-gray-800">
-                    Returns
+                  <Link href="/cart" className="text-[#8A8FB9] hover:text-gray-800">
+                   Cart
                   </Link>
                 </li>
                 <li className="mb-4">
-                  <Link href="/orders-history" className="text-[#8A8FB9] hover:text-gray-800">
-                    Orders History
+                  <Link href="/shipment" className="text-[#8A8FB9] hover:text-gray-800">
+                   Shipment
                   </Link>
                 </li>
-                <li className="mb-4">
-                  <Link href="/order-tracking" className="text-[#8A8FB9] hover:text-gray-800">
-                    Order Tracking
-                  </Link>
-                </li>
+                
               </nav>
             </div>
 
@@ -153,15 +149,15 @@ function Footer() {
               </a>
             </p>
             <span className="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
-              <div className="text-3xl text-gray-900">
+            <Link href="/"> <div className="text-3xl text-gray-900">
                 <FaFacebook />
-              </div>
-              <div className="text-3xl ml-3 text-gray-900">
+              </div></Link>
+              <Link href="/"> <div className="text-3xl ml-3 text-gray-900">
                 <RxInstagramLogo />
-              </div>
-              <div className="text-3xl ml-3 text-gray-900">
+              </div></Link>
+              <Link href="/">  <div className="text-3xl ml-3 text-gray-900">
                 <FaLinkedin />
-              </div>
+              </div></Link>
             </span>
           </div>
         </div>

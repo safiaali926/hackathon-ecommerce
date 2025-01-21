@@ -31,9 +31,9 @@ export default function Wishlist() {
   const handleAddToCart = (item: any) => {
     // Create a copy of the cart
     const updatedCart = [...cartItems];
-
+    console.log (item)
     // Check if the item already exists in the cart by comparing their IDs
-    const existingItemIndex = updatedCart.findIndex((cartItem) => cartItem.id === item.id);
+    const existingItemIndex = updatedCart.findIndex((cartItem) => cartItem._id === item._id);
 
     if (existingItemIndex !== -1) {
       // If it exists, increase the quantity of that specific item
@@ -54,7 +54,7 @@ export default function Wishlist() {
   // Remove item completely from the wishlist
   const handleDelete = (id: string) => {
     // Filter the wishlist to remove the item with the matching ID
-    const updatedWishlist = wishlistItems.filter((item) => item.id !== id);
+    const updatedWishlist = wishlistItems.filter((item) => item._id !== id);
     setWishlistItems(updatedWishlist);
 
     // Save updated wishlist to localStorage
@@ -115,7 +115,7 @@ export default function Wishlist() {
                       </button>
                       <button
                         className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600"
-                        onClick={() => handleDelete(item.id)} // Remove from wishlist
+                        onClick={() => handleDelete(item._id)} // Remove from wishlist
                       >
                         Remove
                       </button>

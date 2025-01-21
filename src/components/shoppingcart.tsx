@@ -27,7 +27,7 @@ export default function Cart() {
   // Add item to cart
   const handleAdd = (id: string) => {
     const updatedCart = [...cartItems];
-    const existingItemIndex = updatedCart.findIndex((item) => item.id === id);
+    const existingItemIndex = updatedCart.findIndex((item) => item._id === id);
 
     if (existingItemIndex !== -1) {
       updatedCart[existingItemIndex].quantity += 1;
@@ -55,7 +55,7 @@ export default function Cart() {
 
   // Remove item completely from the cart
   const handleDelete = (id: string) => {
-    const updatedCart = cartItems.filter((item) => item.id !== id);
+    const updatedCart = cartItems.filter((item) => item._id !== id);
     setCartItems(updatedCart);
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
@@ -108,7 +108,7 @@ export default function Cart() {
                       <img src={item.imageurl} alt="Product" className="w-full h-full rounded-lg" />
                       <button
                         className="absolute top-0 right-0 bg-white rounded-full p-1"
-                        onClick={() => handleDelete(item.id)}
+                        onClick={() => handleDelete(item._id)}
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -132,14 +132,14 @@ export default function Cart() {
                   <div className="hidden sm:block">
                     <div className="flex items-center">
                       <button
-                        onClick={() => handleRemove(item.id)}
+                        onClick={() => handleRemove(item._id)}
                         className="text-gray-600 px-2 py-1 border rounded"
                       >
                         -
                       </button>
                       <span className="px-3">{item.quantity}</span>
                       <button
-                        onClick={() => handleAdd(item.id)}
+                        onClick={() => handleAdd(item._id)}
                         className="text-gray-600 px-2 py-1 border rounded"
                       >
                         +
