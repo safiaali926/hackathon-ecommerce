@@ -1,11 +1,12 @@
-"use client";
+"use client"
 import { useEffect, useState } from "react";
 import { createClient } from "@sanity/client";
 import Image from "next/image";
 import Link from "next/link";
 import imageUrlBuilder from "@sanity/image-url";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Heart, ShoppingCart, ZoomIn } from "lucide-react";
+import { ShoppingCart, ZoomIn } from "lucide-react";
+import { FiHeart } from "react-icons/fi";
 
 // Sanity Client Configuration
 const client = createClient({
@@ -19,7 +20,7 @@ const builder = imageUrlBuilder(client);
 
 // Function to get the image URL from Sanity
 function urlFor(source: any) {
-  return builder.image(source);
+  return source ? builder.image(source).url() : "";
 }
 
 // Define Product Type
@@ -28,8 +29,8 @@ interface Product {
   title: string;
   price: number;
   originalprice?: number;
-  imageurl: any; // Updated to be of type 'any' since it's an image object
-  badge: string;
+  imageurl: any;
+  badge?: string;
 }
 
 const LatestProduct = () => {
@@ -40,6 +41,7 @@ const LatestProduct = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<string>("new arrival");
+  const [wishlist, setWishlist] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -49,26 +51,26 @@ const LatestProduct = () => {
           title,
           price,
           originalprice,
-          imageurl { asset->{ url } },
-          sale
+          "imageurl": imageurl.asset->url,
+          badge
         }`;
 
-        const bestSellerQuery = `*[_type == "product" && "best seller" in tags] | order(salesCount desc)  {
+        const bestSellerQuery = `*[_type == "product" && "best seller" in tags] | order(salesCount desc) {
           _id,
           title,
           price,
           originalprice,
-          imageurl { asset->{ url } },
-          sale
+          "imageurl": imageurl.asset->url,
+          badge
         }`;
 
-        const specialofferQuery = `*[_type == "product" && "trending" in tags] | order(_createdAt desc)[0..6]  {
+        const specialofferQuery = `*[_type == "product" && "trending" in tags] | order(_createdAt desc)[0..6] {
           _id,
           title,
           price,
           originalprice,
-          imageurl { asset->{ url } },
-          sale
+          "imageurl": imageurl.asset->url,
+          badge
         }`;
 
         const featuredQuery = `*[_type == "product" && "featured" in tags] | order(_createdAt desc)[13..19] {
@@ -76,8 +78,8 @@ const LatestProduct = () => {
           title,
           price,
           originalprice,
-          imageurl { asset->{ url } },
-          sale
+          "imageurl": imageurl.asset->url,
+          badge
         }`;
 
         const [newArrivalData, bestSellerData, specialofferData, featuredData] = await Promise.all([
@@ -99,7 +101,28 @@ const LatestProduct = () => {
     };
 
     fetchProducts();
+
+    // Load wishlist from localStorage
+    const storedWishlist = localStorage.getItem("wishlist");
+    if (storedWishlist) {
+      setWishlist(JSON.parse(storedWishlist));
+    }
   }, []);
+
+  // Handle Wishlist Add/Remove
+  const handleWishlistToggle = (product: Product) => {
+    const isAlreadyInWishlist = wishlist.some((item) => item._id === product._id);
+    let updatedWishlist;
+
+    if (isAlreadyInWishlist) {
+      updatedWishlist = wishlist.filter((item) => item._id !== product._id); // Remove from wishlist
+    } else {
+      updatedWishlist = [...wishlist, product]; // Add to wishlist
+    }
+
+    setWishlist(updatedWishlist);
+    localStorage.setItem("wishlist", JSON.stringify(updatedWishlist)); // Save updated wishlist to localStorage
+  };
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
@@ -109,90 +132,53 @@ const LatestProduct = () => {
       <div className="text-[#151875] text-3xl font-bold text-center mb-8">Latest Products</div>
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="bg-white flex justify-center space-x-8">
-          <TabsTrigger value="new arrival" className="hover:text-pink-500 hover:underline text-[#151875]">
-            New Arrival
-          </TabsTrigger>
-          <TabsTrigger value="best seller" className="hover:text-pink-500 hover:underline text-[#151875]">
-            Best Seller
-          </TabsTrigger>
-          <TabsTrigger value="featured" className="hover:text-pink-500 hover:underline text-[#151875]">
-            Featured
-          </TabsTrigger>
-          <TabsTrigger value="trending" className="hover:text-pink-500 hover:underline text-[#151875]">
-            Special Offer
-          </TabsTrigger>
+          <TabsTrigger value="new arrival">New Arrival</TabsTrigger>
+          <TabsTrigger value="best seller">Best Seller</TabsTrigger>
+          <TabsTrigger value="featured">Featured</TabsTrigger>
+          <TabsTrigger value="trending">Special Offer</TabsTrigger>
         </TabsList>
 
         <TabsContent value="new arrival">
-          <ProductGrid products={newArrivalProducts} />
+          <ProductGrid products={newArrivalProducts} onWishlistToggle={handleWishlistToggle} wishlist={wishlist} />
         </TabsContent>
         <TabsContent value="best seller">
-          <ProductGrid products={bestSellerProducts} />
+          <ProductGrid products={bestSellerProducts} onWishlistToggle={handleWishlistToggle} wishlist={wishlist} />
         </TabsContent>
         <TabsContent value="featured">
-          <ProductGrid products={featuredProducts} />
+          <ProductGrid products={featuredProducts} onWishlistToggle={handleWishlistToggle} wishlist={wishlist} />
         </TabsContent>
         <TabsContent value="trending">
-          <ProductGrid products={specialofferProducts} />
+          <ProductGrid products={specialofferProducts} onWishlistToggle={handleWishlistToggle} wishlist={wishlist} />
         </TabsContent>
       </Tabs>
     </div>
   );
 };
 
-const ProductGrid = ({ products }: { products: Product[] }) => {
-  // Limit the products to 6 before mapping
-  const limitedProducts = products.slice(0, 6);
-
+const ProductGrid = ({ products, onWishlistToggle, wishlist }: { products: Product[]; onWishlistToggle: (product: Product) => void; wishlist: Product[] }) => {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 m-9">
-      {limitedProducts.map((product) => (
+      {products.slice(0, 6).map((product) => (
         <div key={product._id} className="relative group">
-          {/* Image Container */}
           <div className="relative w-full h-64 bg-gray-100 flex items-center justify-center overflow-hidden">
             {product.imageurl ? (
-              <Image
-                src={urlFor(product.imageurl).url()}
-                alt={product.title}
-                layout="fill"
-                objectFit="contain"
-                className="transition-transform transform group-hover:scale-105 w-full h-full"
-              />
+              <Image src={urlFor(product.imageurl)} alt={product.title} layout="fill" objectFit="contain" className="transition-transform transform group-hover:scale-105 w-full h-full" />
             ) : (
-              <div>No image available</div> // Fallback if no image is available
-            )}
-            {product.badge && (
-              <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-sm">
-                {product.badge}
-              </div>
+              <div>No image available</div>
             )}
             <div className="absolute bottom-2 left-2 flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-all">
-              <button className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
-                <Heart className="w-5 h-5 text-sky-500" />
+              <button onClick={() => onWishlistToggle(product)} className="flex items-center justify-center w-10 h-10 bg-white rounded-full hover:bg-gray-200">
+                <FiHeart className={`text-xl ${wishlist.some((item) => item._id === product._id) ? "text-pink-500" : "text-gray-900"}`} />
               </button>
-              <button className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
-                <Link href={`/product/${product._id}`}>
-                  <ShoppingCart className="w-5 h-5 text-blue-800" />
-                </Link>
-              </button>
+              <Link href={`/product/${product._id}`} className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
+                <ShoppingCart className="w-5 h-5 text-blue-800" />
+              </Link>
               <button className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100">
                 <ZoomIn className="w-5 h-5 text-sky-500" />
               </button>
             </div>
           </div>
-
-          {/* Product Details */}
-          <div className="mt-4">
-            <Link href={`/product/${product._id}`} className="text-[#151875] font-semibold">
-              {product.title}
-            </Link>
-            <div className="text-sm text-gray-600">
-              ${product.price}
-              {product.originalprice && (
-                <span className="line-through text-red-500 pl-2">${product.originalprice}</span>
-              )}
-            </div>
-          </div>
+          <div className="mt-4">{product.title} - ${product.price}</div>
         </div>
       ))}
     </div>
