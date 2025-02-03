@@ -1,7 +1,16 @@
 'use client';
-import React, { useState } from 'react';
-import Image from 'next/image';
-import { CircleCheckBig } from 'lucide-react';
+import React, { useState, useEffect } from "react";
+import { createClient } from "@sanity/client";
+import Link from "next/link";
+
+
+// Initialize Sanity client
+const client = createClient({
+  projectId: process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || "your_project_id",
+  dataset: process.env.NEXT_PUBLIC_SANITY_DATASET || "your_dataset",
+  useCdn: true,
+  apiVersion: "2021-08-31",
+});
 
 interface FormData {
   firstName: string;
@@ -33,27 +42,50 @@ export default function CheckoutPage() {
 
   const [rates, setRates] = useState<ShippingRate[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [cartItems, setCartItems] = useState<any[]>([]);
+
+  // Sync cart state with localStorage
+  useEffect(() => {
+    const storedCart = localStorage.getItem("cart");
+    if (storedCart) {
+      setCartItems(JSON.parse(storedCart)); // Load cart from localStorage
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // Fetch Shipping Rates
   const getShippingRates = async () => {
-    setLoading(true); 
-    console.log ("abcd")
+    setLoading(true);
+    console.log("Fetching shipping rates with:", formData);
+
     try {
-      const response = await fetch('/api/shipment', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const response = await fetch("/api/shipment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       const data = await response.json();
-      setRates(data.rates || []);
+      console.log("Shipping Rates Response:", data); // Debugging
+
+      if (data.rates) {
+        setRates(data.rates);
+      } else {
+        setRates([]);
+        console.error("No shipping rates found.");
+      }
     } catch (error) {
-      console.error('Error fetching shipping rates:', error);
+      console.error("Error fetching shipping rates:", error);
     }
     setLoading(false);
+  };
+
+  // Calculate total price
+  const calculateTotal = () => {
+    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
   return (
@@ -98,89 +130,60 @@ export default function CheckoutPage() {
           <div className="p-4">
             <h3 className="text-base font-semibold text-[#151875] mb-4">Shipping Address</h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-              <input
-                name="firstName"
-                type="text"
-                placeholder="First name (optional)"
-                className="w-full border border-gray-300 rounded p-3"
-                onChange={handleChange}
-              />
-              <input
-                name="lastName"
-                type="text"
-                placeholder="Last name"
-                className="w-full border border-gray-300 rounded p-3"
-                onChange={handleChange}
-              />
+              <input name="firstName" type="text" placeholder="First name (optional)" className="w-full border border-gray-300 rounded p-3" onChange={handleChange} />
+              <input name="lastName" type="text" placeholder="Last name" className="w-full border border-gray-300 rounded p-3" onChange={handleChange} />
             </div>
-            <input
-              name="street"
-              type="text"
-              placeholder="Address"
-              className="w-full border border-gray-300 rounded p-3 mb-4"
-              onChange={handleChange}
-            />
-            <input
-              name="apartment"
-              type="text"
-              placeholder="Apartment, suite, etc. (optional)"
-              className="w-full border border-gray-300 rounded p-3 mb-4"
-              onChange={handleChange}
-            />
-            <input
-              name="city"
-              type="text"
-              placeholder="City"
-              className="w-full border border-gray-300 rounded p-3 mb-4"
-              onChange={handleChange}
-            />
-            <input
-              name="country"
-              type="text"
-              placeholder="Country"
-              defaultValue="Bangladesh"
-              className="w-full border border-gray-300 rounded p-3 mb-4"
-              onChange={handleChange}
-            />
-            <input
-              name="postalCode"
-              type="text"
-              placeholder="Postal Code"
-              className="w-full border border-gray-300 rounded p-3 mb-6"
-              onChange={handleChange}
-            />
+            <input name="street" type="text" placeholder="Address" className="w-full border border-gray-300 rounded p-3 mb-4" onChange={handleChange} />
+            <input name="apartment" type="text" placeholder="Apartment, suite, etc. (optional)" className="w-full border border-gray-300 rounded p-3 mb-4" onChange={handleChange} />
+            <input name="city" type="text" placeholder="City" className="w-full border border-gray-300 rounded p-3 mb-4" onChange={handleChange} />
+            <input name="postalCode" type="text" placeholder="Postal Code" className="w-full border border-gray-300 rounded p-3 mb-6" onChange={handleChange} />
           </div>
 
-          <button
-            onClick={getShippingRates}
-            className="bg-pink-500 text-white font-bold p-3 rounded hover:bg-pink-600 ml-4 mb-4"
-          >
-            {loading ? 'Loading...' : 'Calculate Shipping'}
+          <button onClick={getShippingRates} className="bg-pink-500 text-white font-bold p-3 rounded hover:bg-pink-600 ml-4 mb-4">
+            {loading ? "Loading..." : "Calculate Shipping"}
           </button>
 
           {/* Display Shipping Rates */}
-          {rates.length > 0 && (
+          {rates.length > 0 ? (
             <div className="mt-6">
               <h3 className="text-lg font-semibold text-[#151875] mb-4">Shipping Rates</h3>
               <ul className="bg-white p-4 rounded-lg shadow">
                 {rates.map((rate) => (
                   <li key={rate.object_id} className="flex justify-between py-2">
                     <span>{rate.provider} ({rate.servicelevel.name})</span>
-                    <span className="font-bold">${rate.amount}</span>
+                    <span className="font-bold">${(parseFloat(rate.amount) / 100).toFixed(2)}</span>
                   </li>
                 ))}
               </ul>
             </div>
+          ) : (
+            <p className="text-gray-500 mt-4">No shipping rates available.</p>
           )}
         </div>
 
-        {/* Order Summary */}
-        <div className="bg-white p-6 rounded-lg">
+             {/* Order Summary */}
+             <div className="bg-white p-6 rounded-lg">
           <h3 className="text-lg font-semibold text-[#151875] mb-6">Order Summary</h3>
-          <p className="text-gray-500">Total: <span className="font-bold">$325.00</span></p>
-          <button className="w-full px-6 py-2 bg-green-500 text-white rounded-sm hover:bg-green-600 mt-4">
+          <div className="space-y-4">
+            {cartItems.length === 0 ? (
+              <p className="text-gray-500">Your cart is empty.</p>
+            ) : (
+              cartItems.map((item) => (
+                <div key={item._id} className="flex justify-between text-gray-600">
+                  <span>{item.title} x {item.quantity}</span>
+                  <span>${(item.price * item.quantity).toFixed(2)}</span>
+                </div>
+              ))
+            )}
+          </div>
+          <hr className="my-4" />
+          <div className="flex justify-between font-bold text-[#151875] text-lg">
+            <span>Total:</span>
+            <span>${calculateTotal().toFixed(2)}</span>
+          </div>
+         <Link href="/checkout"> <button className="w-full px-6 py-2 bg-green-500 text-white rounded-sm hover:bg-green-600 mt-4">
             Proceed to Checkout
-          </button>
+          </button></Link>
         </div>
       </main>
     </div>
