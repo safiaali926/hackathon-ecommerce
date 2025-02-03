@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { UserRound } from "lucide-react";
 import SearchBar from "./handlesearch";
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -76,10 +77,21 @@ function Header() {
             <option className="text-gray-800">GBP</option>
           </select>
           <div className="flex space-x-6">
-            <Link href="/signin" className="flex items-center hover:underline">
-              <UserRound className="w-4 h-4 mr-2" />
-              Login
-            </Link>
+               {/* Signed Out → Show Login Button */}
+               <SignedOut>
+              <SignInButton mode="modal">
+                <button className="flex items-center hover:underline">
+                  <UserRound className="w-4 h-4 mr-2" />
+                  Login
+                </button>
+              </SignInButton>
+            </SignedOut>
+
+            {/* Signed In → Show User Button */}
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+            </SignedIn>
+           
             <Link href="/wishlist" className="flex items-center hover:underline">
               <Heart className="w-4 h-4 mr-2" />
               Wishlist

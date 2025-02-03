@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Header from "@/components/header"
+import Header from "@/components/header";
 import Footer from "@/components/footer";
+import ClerkProviderWrapper from "@/components/ClerkProviderWrapper"; // Import the new wrapper
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,10 +18,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-     <Header/>   {children}
-     <Footer/></body>
-    </html>
+    <ClerkProviderWrapper>
+      <html lang="en">
+        <body className={inter.className}>
+          <Header />
+          {children}
+          <Footer />
+        </body>
+      </html>
+    </ClerkProviderWrapper>
   );
 }
