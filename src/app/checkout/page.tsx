@@ -27,8 +27,8 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div style={{ maxWidth: 400, margin: "0 auto" }}>
-      <h1>Checkout</h1>
+    <div style={{ maxWidth: 400, margin: "0 auto" }} className="border-2 p-4 rounded-2xl">
+      <h1 className="text-xl">Checkout</h1>
       {/* Wrap the payment form inside the Elements provider with Stripe instance and client secret */}
       <Elements stripe={stripePromise} 
       options={{ clientSecret }}>
@@ -74,7 +74,7 @@ function PaymentForm() {
     <form onSubmit={handleSubmit}>
       {/* Stripe's payment element (handles input fields for card details, etc.) */}
       <PaymentElement />
-      <button type="submit" 
+      <button type="submit" className="bg-pink-500 p-1 text-center my-3 rounded text-white "
       disabled={!stripe || isProcessing}>
         {isProcessing ? "Processing..." : "Pay Now"} {/* Show dynamic button text */}
       </button>
